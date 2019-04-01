@@ -10,3 +10,12 @@ maoyan_pq.py
 
 zhihu.py
 知乎回答
+
+zhihu_top.py 
+知乎热榜
+
+baidu_top.py
+百度热搜
+
+weibo_top.py
+微博热搜
