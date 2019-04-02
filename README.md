@@ -25,3 +25,7 @@ baidu_top.py
 weibo_top.py
 微博热搜
 结果保存到MySQL
+
+bili_top.py
+B站播放排行榜
+结果保存到MySQL
