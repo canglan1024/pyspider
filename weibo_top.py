@@ -2,15 +2,23 @@ from selenium import webdriver
 import pymysql
 import datetime
 
+
+def astr(num=0):
+    if num < 10:
+        return '0'+str(num)
+    else:
+        return str(num)
+
+
 time = datetime.datetime.now()
-table_name = 'M'+str(time.month)+'D'+str(time.day)+'h'+str(time.hour)+'m'+str(time.minute)
+table_name = 'M'+astr(time.month)+'D'+astr(time.day)+'h'+astr(time.hour)+'m'+astr(time.minute)
 
 url = 'https://s.weibo.com/top/summary?cate=realtimehot'
 
 host = 'localhost'
 port = 3306
 username = 'root'
-password = 'password'
+password = 'xuanyuan'
 database = 'weibo_top'
 
 try:
@@ -29,8 +37,17 @@ except Exception as e:
     print(e)
 
 options = webdriver.ChromeOptions()
+# 无头模式
 options.add_argument('--headless')
+# 关闭沙盒 允许root运行
 options.add_argument('--no-sandbox')
+prefs = {
+    'profile.default_content_setting_values': {
+        'images': 2,  # 不加载图片
+        'javascript': 2,  # 不加载JS
+    }
+}
+options.add_experimental_option("prefs", prefs)
 browser = webdriver.Chrome(chrome_options=options)
 browser.get(url)
 
