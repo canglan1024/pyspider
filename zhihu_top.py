@@ -2,15 +2,23 @@ from selenium import webdriver
 import pymysql
 import datetime
 
+
+def astr(num=0):
+    if num < 10:
+        return '0'+str(num)
+    else:
+        return str(num)
+
+
 time = datetime.datetime.now()
-table_name = 'M'+str(time.month)+'D'+str(time.day)+'h'+str(time.hour)+'m'+str(time.minute)
+table_name = 'M'+astr(time.month)+'D'+astr(time.day)+'h'+astr(time.hour)+'m'+astr(time.minute)
 
 url = 'https://www.zhihu.com/billboard'
 
 host = 'localhost'
 port = 3306
 username = 'root'
-password = 'password'
+password = 'xuanyuan'
 database = 'zhihu_top'
 
 try:
@@ -19,7 +27,9 @@ try:
 except pymysql.MySQLError as e:
     print(e.args)
 
-create_table = "CREATE TABLE " + table_name + "(rank int UNSIGNED AUTO_INCREMENT,question varchar(255) NOT NULL,detail varchar(511) NOT NULL,hot varchar(127) NOT NULL,PRIMARY KEY(rank))DEFAULT charset=utf8;"
+create_table = "CREATE TABLE " + table_name + "(rank int UNSIGNED AUTO_INCREMENT,question varchar(255) NOT NULL," \
+                                              "detail varchar(1024) NOT NULL,hot varchar(127) NOT NULL," \
+                                              "PRIMARY KEY(rank))DEFAULT charset=utf8;"
 
 try:
     cursor.execute(create_table)
@@ -29,8 +39,17 @@ except Exception as e:
     print(e)
 
 options = webdriver.ChromeOptions()
+# 无头模式
 options.add_argument('--headless')
+# 关闭沙盒 允许root运行
 options.add_argument('--no-sandbox')
+prefs = {
+    'profile.default_content_setting_values': {
+        'images': 2,  # 不加载图片
+        'javascript': 2,  # 不加载JS
+    }
+}
+options.add_experimental_option("prefs", prefs)
 browser = webdriver.Chrome(chrome_options=options)
 browser.get(url)
 
