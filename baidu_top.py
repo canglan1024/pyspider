@@ -18,7 +18,7 @@ url = 'http://top.baidu.com/m/#buzz/1/515'
 host = 'localhost'
 port = 3306
 username = 'root'
-password = 'xuanyuan'
+password = 'password'
 database = 'baidu_top'
 
 try:
