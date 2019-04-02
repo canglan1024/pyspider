@@ -18,7 +18,7 @@ url = 'https://www.bilibili.com/ranking/all/0/0/7'
 host = 'localhost'
 port = 3306
 username = 'root'
-password = 'xuanyuan'
+password = 'password'
 database = 'bili_top'
 
 try:
