@@ -18,7 +18,7 @@ url = 'https://s.weibo.com/top/summary?cate=realtimehot'
 host = 'localhost'
 port = 3306
 username = 'root'
-password = 'xuanyuan'
+password = 'password'
 database = 'weibo_top'
 
 try:
@@ -55,6 +55,7 @@ titles = browser.find_elements_by_class_name('td-02')
 for i in range(51):
     rank = str(i+1)
     if i == 0:
+        # 置顶热搜
         keyword = titles[i].text
         hit = '999999'
     else:
