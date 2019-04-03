@@ -13,12 +13,16 @@ def astr(num=0):
 time = datetime.datetime.now()
 table_name = 'M'+astr(time.month)+'D'+astr(time.day)+'h'+astr(time.hour)+'m'+astr(time.minute)
 
-url = 'https://www.bilibili.com/ranking/all/0/0/7'
+addrs = ['all/0/0/1', 'all/1/0/1', 'all/168/0/1', 'all/3/0/1', 'all/188/0/1', 'all/119/0/1']
+content = ["'全站榜-全站/全部/日排行'", "'全站榜-动画/全部/日排行'", "'全站榜-国创/全部/日排行'", "'全站榜-音乐/全部/日排行'",
+           "'全站榜-数码/全部/日排行'", "'全站榜-鬼畜/全部/日排行'", ]
+index = time.hour % 6
+url = 'https://www.bilibili.com/ranking/' + addrs[index]
 
 host = 'localhost'
 port = 3306
 username = 'root'
-password = 'password'
+password = 'xuanyuan'
 database = 'bili_top'
 
 try:
@@ -27,9 +31,12 @@ try:
 except pymysql.MySQLError as e:
     print(e.args)
 
-create_table = "CREATE TABLE " + table_name + "(rank int AUTO_INCREMENT,title varchar(255) NOT NULL,play varchar(40) " \
-                                              "NOT NULL,view varchar(40) NOT NULL, author varchar(50), " \
-                                              "url varchar(100), PRIMARY KEY(rank))DEFAULT charset=utf8;"
+create_table = "CREATE TABLE " + table_name + "(rank int AUTO_INCREMENT COMMENT '排名',title varchar(255) NOT NULL " \
+                                              "COMMENT '标题',point int NOT NULL COMMENT '综合得分',play varchar(40) " \
+                                              "NOT NULL COMMENT '播放数',view varchar(40) NOT NULL COMMENT '弹幕数', " \
+                                              "author varchar(50) NOT NULL COMMENT 'UP主', url varchar(100) " \
+                                              "COMMENT '链接', PRIMARY KEY(rank))DEFAULT charset=utf8 " \
+                                              "COMMENT=" + content[index] + ";"
 
 try:
     cursor.execute(create_table)
@@ -55,6 +62,7 @@ browser.get(url)
 
 titles = browser.find_elements_by_class_name('title')
 datas = browser.find_elements_by_class_name('data-box')
+points = browser.find_elements_by_class_name('pts')
 for i in range(len(titles)):
     rank = str(i+1)
     title = titles[i].text
@@ -62,15 +70,16 @@ for i in range(len(titles)):
     play = datas[3*i].text
     view = datas[3*i+1].text
     author = datas[3*i+2].text
+    point = points[i].text.split('\n')[0]
     try:
-        cursor.execute("INSERT INTO "+table_name+"(rank,title,play,view,author,url)  VALUES(%s,%s,%s,%s,%s,%s);",
-                       (rank, title, play, view, author, vurl))
+        cursor.execute("INSERT INTO "+table_name+"(rank,title,point,play,view,author,url) VALUES(%s,%s,%s,%s,%s,%s,%s);",
+                       (rank, title, point, play, view, author, vurl))
         db.commit()
     except Exception as e:
         db.rollback()
         print(e)
 
-print('Save to ', table_name, ' in ', database, ' completed!')
+print(content[index], 'Save to ', table_name, ' in ', database, ' completed!')
 browser.quit()
 cursor.close()
 db.close()
